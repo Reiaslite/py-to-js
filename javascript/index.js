@@ -69,12 +69,36 @@ function insertData() {
     console.clear()
     // Insert data paket
     const nama = prompt("Masukkan nama: ")
-    const paket = prompt("Masukkan paket: ")
+    // error handling
+    let paket;
+    while (true) {
+        paket = prompt("Masukkan paket: ")
+    
+        if (isNaN(paket)) {
+            console.error("Input Paket harus berupa angka!\n")
+        } else if (paket > data_paket.length || paket <= 0){
+            console.error("Paket yang tersedia hanya 1-4!\n");
+        }else {
+            break;
+        }
+    }
     const get_paket = data_paket[paket-1]
     console.log(`Paket yang dipilih: ${get_paket[0]} - ${get_paket[1]} - ${get_paket[2]}\n`)
 
     // Insert data tambahan
-    const tambahan = prompt("Masukkan tambahan: ")
+    // error handling
+    let tambahan
+    while (true) {
+        tambahan = prompt("Masukkan tambahan: ")
+        if(isNaN(tambahan)){
+            console.error("Input Tambahan harus berupa angka!\n")
+        } else if (tambahan > data_tambahan.length || tambahan <= 0){
+            console.error("Tambahan yang tersedia hanya 1-3!\n");
+        } else {
+            break;
+        }
+
+    }
     const get_tambahan = data_tambahan[tambahan-1]
     console.log(`Tambahan yang dipilih: ${get_tambahan[0]} - ${get_tambahan[1]} - ${get_tambahan[2]}\n`)
 

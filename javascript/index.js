@@ -1,4 +1,5 @@
 const prompt = require('prompt-sync')({sigint: true});
+const Table = require('cli-table');
 
 const peserta = []
 
@@ -17,15 +18,27 @@ const data_tambahan = [
 
 function showPaket() {
     console.clear()
-    console.log("Data paket")
+    // Buat Tabel Paket
+    const table = new Table({
+        head: ['No', 'Nama Paket', 'Kuota', 'Harga']
+    })
     for (let i = 0; i < data_paket.length; i++) {
-        console.log(`${i+1}. ${data_paket[i][0]} - ${data_paket[i][1]} - ${data_paket[i][2]}`)
+        table.push([i+1, data_paket[i][0], data_paket[i][1], data_paket[i][2]])
     }
     
-    console.log("\nData tambahan")
+    // Buat Tabel Tambahan
+    const table2 = new Table({
+        head: ['No', 'Nama Tambahan', 'Harga']
+    })
     for (let i = 0; i < data_tambahan.length; i++) {
-        console.log(`${i+1}. ${data_tambahan[i][0]} - ${data_tambahan[i][1]} - ${data_tambahan[i][2]}`)
+        table2.push([i+1, data_tambahan[i][1], data_tambahan[i][2]])
     }
+
+    // Tampilkan tabel
+    console.log("Data paket")
+    console.log(table.toString())
+    console.log("\nData tambahan")
+    console.log(table2.toString())
     menu()
 }
 
@@ -45,12 +58,19 @@ function showData() {
         }
     } else {
         console.clear()
-        console.log("Data peserta\n")
+        // Buat Tabel Data Peserta
+        const table = new Table({
+            head: ['No', 'Nama', 'Paket', 'Tambahan', 'Total']
+        })
 
-        console.log("|No.|\t|Nama|\t|Paket|\t\t\t\t\t|Tambahan|\t\t|Total|")
         for (let i = 0; i < peserta.length; i++) {
-            console.log(`${i+1}.\t${peserta[i].nama}\t${peserta[i].paket}\t${peserta[i].tambahan}\t${peserta[i].total}`)
+            table.push([i+1, peserta[i].nama, peserta[i].paket[0], peserta[i].tambahan[0], peserta[i].total])
         }
+
+        // Tampilkan tabel
+        console.log("Data peserta")
+        console.log(table.toString())
+
         const choice = prompt("Ingin Membeli Tiket Lagi? (y/n) ")
         if(choice == "y"){
             insertData()
@@ -68,11 +88,11 @@ function showData() {
 function insertData() {
     console.clear()
     // Insert data paket
-    const nama = prompt("Masukkan nama: ")
+    const nama = prompt("Masukkan nama\t: ")
     // error handling
     let paket;
     while (true) {
-        paket = prompt("Masukkan paket: ")
+        paket = prompt("Masukkan paket\t: ")
     
         if (isNaN(paket)) {
             console.error("Input Paket harus berupa angka!\n")
@@ -83,7 +103,15 @@ function insertData() {
         }
     }
     const get_paket = data_paket[paket-1]
-    console.log(`Paket yang dipilih: ${get_paket[0]} - ${get_paket[1]} - ${get_paket[2]}\n`)
+
+    const tablePaket = new Table({
+        head: ['No', 'Nama Paket', 'Kuota', 'Harga']
+    })
+    tablePaket.push([paket, get_paket[0], get_paket[1], get_paket[2]])
+
+    console.log(tablePaket.toString())
+
+    // console.log(`Paket yang dipilih: ${get_paket[0]} - ${get_paket[1]} - ${get_paket[2]}\n`)
 
     // Insert data tambahan
     // error handling
@@ -100,11 +128,22 @@ function insertData() {
 
     }
     const get_tambahan = data_tambahan[tambahan-1]
-    console.log(`Tambahan yang dipilih: ${get_tambahan[0]} - ${get_tambahan[1]} - ${get_tambahan[2]}\n`)
+
+    const tableTambahan = new Table ({
+        head: ['No', 'Kode Tambahan', 'Tipe', 'Harga']
+    })
+    tableTambahan.push([tambahan, get_tambahan[0], get_tambahan[1], get_tambahan[2]])
+    console.log(tableTambahan.toString())
+    // console.log(`Tambahan yang dipilih: ${get_tambahan[0]} - ${get_tambahan[1]} - ${get_tambahan[2]}\n`)
 
     // Hitung total harga
     const total = parseInt(get_paket[2]) + parseInt(get_tambahan[2])
-    console.log(`Total harga: ${total}\n`)
+    const totalTable = new Table({
+        head: ['Total Harga']
+    })
+    totalTable.push([total])
+    console.log(totalTable.toString())
+    // console.log(`Total harga: ${total}\n`)
     peserta.push({
         nama: nama,
         paket: get_paket,
@@ -132,7 +171,14 @@ function searchData() {
     });
     const found = filtered[0];
     if (found) {
-        console.log(`Data ditemukan: ${found.nama} - ${found.paket} - ${found.tambahan} - ${found.total}`)
+        const table = new Table({
+            head: ['No', 'Nama Pembeli', 'Paket', 'Tambahan', 'Total']
+        })
+        for (let i = 0; i < filtered.length; i++) {
+            table.push([i+1, filtered[i].nama, filtered[i].paket[0], filtered[i].tambahan[1], filtered[i].total])
+        }
+        console.log(table.toString())
+        // console.log(`Data ditemukan: ${found.nama} - ${found.paket} - ${found.tambahan} - ${found.total}`)
     } else {
         console.log("Data tidak ditemukan")
     }
@@ -156,7 +202,14 @@ function deleteData() {
     });
     const found = filtered[0];
     if (found) {
-        console.log(`Data ditemukan: ${found.nama} - ${found.paket} - ${found.tambahan} - ${found.total}`)
+        const table = new Table({
+            head: ['No', 'Nama Pembeli', 'Paket', 'Tambahan', 'Total']
+        })
+        for (let i = 0; i < filtered.length; i++) {
+            table.push([i+1, filtered[i].nama, filtered[i].paket[0], filtered[i].tambahan[1], filtered[i].total])
+        }
+        console.log(table.toString())
+        // console.log(`Data ditemukan: ${found.nama} - ${found.paket} - ${found.tambahan} - ${found.total}`)
         const choice = prompt("Apakah anda yakin ingin menghapus data ini? (y/n) ")
         if(choice == "y"){
             const index = peserta.indexOf(found)
